@@ -1,0 +1,240 @@
+
+drop table Employee cascade constraints; 
+
+CREATE TABLE Employee
+(empID varchar2(11) not null,
+fName varchar2(40) not null,
+lName varchar2(40) not null,
+workingHours number(10) not null, 
+payRate number(12,2) not null,
+empDate DATE not null,
+constraint Employee_pk primary key (empID));
+
+drop table Customer cascade constraints; 
+CREATE TABLE Customer
+(custID varchar2(11) not null,
+fName varchar2(20),
+lName varchar2(20),
+address varchar2(40) null,
+city varchar2(20) null,
+state char(2) not null,
+phoneNo char(12) not null,
+constraint Customer_PK PRIMARY KEY (custID));
+
+drop table Delivery cascade constraints; 
+CREATE TABLE Delivery
+(dID char(4) not null,
+empID varchar2(11) not null,
+custID varchar2(11) not null,
+dDate DATE not null,
+constraint Delivery_PK PRIMARY KEY (dID),
+constraint Delivery_FK_Employee FOREIGN KEY (empID) references Employee,
+constraint Delivery_FK_Customer FOREIGN KEY (custID) references Customer);
+
+drop table Orders cascade constraints; 
+
+CREATE TABLE Orders
+(orderID varchar2(20) not null,
+custID varchar2(11) not null,
+dID char(4) not null,
+orderDate DATE not null,
+constraint Orders_PK PRIMARY KEY (orderID),
+constraint Orders_FK_Customer FOREIGN KEY (custID) references Customer,
+constraint Orders_FK_Delivery FOREIGN KEY (dID) references Delivery);
+
+drop table DeliveryDriver cascade constraints; 
+CREATE TABLE DeliveryDriver 
+(empID varchar2(11) not null,
+driverLiNo varchar2(11) not null,
+state char(2) not null,
+constraint DeliveryDriver_FK_Employee FOREIGN KEY (empID) references Employee);
+
+drop table Manager cascade constraints; 
+CREATE TABLE Manager
+(empID varchar2(11) not null,
+yearsOfExp varchar2(10),        
+constraint Manager_FK_Employee FOREIGN KEY (empID) references Employee);
+
+drop table OrderReturn cascade constraints; 
+CREATE TABLE OrderReturn
+(returnID varchar2(11) not null,
+custID varchar2(11) not null,
+returnDate DATE not null,
+constraint OrderReturn_PK PRIMARY KEY (returnID),
+constraint OrderReturn_FK_Customer FOREIGN KEY (custID) references Customer);
+
+drop table Warehouse cascade constraints; 
+CREATE TABLE Warehouse
+(warehouseID varchar2(11) not null,
+warehouseAddress varchar2(40) not null,
+constraint Warehouse_PK PRIMARY KEY (warehouseID));
+
+drop table Vendor cascade constraints; 
+CREATE TABLE Vendor
+(vendorID varchar2(11) not null,
+vendorName varchar2(40) not null,
+address varchar2(60) not null,
+phoneNo varchar2(15) not null,
+constraint Vendor_PK PRIMARY KEY (vendorID));
+
+drop table Product cascade constraints; 
+CREATE TABLE Product
+(productID varchar2(11) not null,
+orderID varchar2(20) not null,
+productName varchar2(20) not null,
+productCategory varchar2(20) not null,
+costPrice number(10) not null,
+salePrice number(10) not null,
+constraint Product_PK PRIMARY KEY (productID),
+constraint Product_FK_Order FOREIGN KEY (orderID) references Orders);
+
+drop table Supply cascade constraints; 
+CREATE TABLE Supply
+(warehouseID varchar2(11) not null,
+vendorID varchar2(11) not null,
+productID varchar2(11) not null,
+constraint Supply_FK_Warehouse FOREIGN KEY (warehouseID) references Warehouse,
+constraint Supply_FK_Vendor FOREIGN KEY (vendorID) references Vendor,
+constraint Supply_FK_Product FOREIGN KEY (productID) references Product);
+
+drop table OrderLineItem cascade constraints; 
+CREATE TABLE OrderLineItem
+(itemNo varchar2(11) not null,
+orderID varchar2(20) not null,
+productID varchar2(11) not null,
+description varchar2(200) not null,
+constraint OrderLineItem_PK PRIMARY KEY (itemNo),
+constraint OrderLineItem_FK_Orders FOREIGN KEY (orderID) references Orders,
+constraint OrderLineItem_FK_Product FOREIGN KEY (productID) references Product);
+
+
+drop table ReturnLineItem cascade constraints; 
+CREATE TABLE ReturnLineItem
+(rLID varchar2(11) not null,
+returnID varchar2(11) not null,
+itemNo varchar2(11) not null,
+description varchar2(200) not null,
+constraint ReturnLineItem_PK PRIMARY KEY (rLID),
+constraint ReturnLineItem_FK_OrderReturn FOREIGN KEY (returnID) references OrderReturn,
+constraint ReturnLineItem_FK_OrderLineItem FOREIGN KEY (itemNo) references OrderLineItem);
+
+
+
+
+INSERT INTO Employee VALUES ('75838', 'Joy', 'Roy', '40', '24.00', TO_DATE('2006-07-23', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('74838', 'Josh', 'Milan', '40', '43.00', TO_DATE('2012-07-23', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('86947', 'Amy', 'Vice', '40', '32.00', TO_DATE('2015-04-19', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('38956', 'Roy', 'King', '40', '28.00', TO_DATE('2008-05-08', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('86943', 'Sam', 'John', '40', '24.00', TO_DATE('2006-02-04', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('74837', 'Ram', 'Kumar', '40', '34.00', TO_DATE('2006-09-13', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('24478', 'Shyam', 'Reddy', '40', '45.00', TO_DATE('2011-03-15', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('96740', 'Avi', 'Singh', '40', '63.00', TO_DATE('2005-07-07', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('26473', 'Ping', 'Yong', '40', '48.00', TO_DATE('2018-04-18', 'YYYY-MM-DD'));
+INSERT INTO Employee VALUES ('58484', 'Pete', 'Bekham', '40', '44.00', TO_DATE('2016-02-24', 'YYYY-MM-DD'));
+
+
+
+
+
+INSERT INTO Customer VALUES ('648-92-1872', 'Morris', 'Taylor', '1711 Brandywine St', 'Philadelphia', 'PA', '201 946-8853');
+INSERT INTO Customer VALUES ('213-46-8915', 'Edith', 'Smart', '3410 Blonde St.', 'Boston', 'MA', '801 826-0752');
+INSERT INTO Customer VALUES ('427-17-2319', 'Chelsea', 'Rhinney', '3675 Market Street', 'Philadelphia', 'PA', '408 286-2428');
+INSERT INTO Customer VALUES ('527-72-3246', 'Richeal', 'Adams', '22 Compton Av.', 'Los Angeles', 'CA', '913 843-0462');
+INSERT INTO Customer VALUES ('486-29-1786', 'Claude', 'Quartey', '30 Broadway Ave.', 'San Francisco', 'CA', '415 843-2991');
+
+
+
+
+INSERT INTO Delivery VALUES ('0877', '74837', '527-72-3246', TO_DATE('2016-12-21', 'YYYY-MM-DD'));
+INSERT INTO Delivery VALUES ('0736', '96740', '648-92-1872', TO_DATE('2020-1-30', 'YYYY-MM-DD'));
+INSERT INTO Delivery VALUES ('1389', '74837', '486-29-1786', TO_DATE('2017-3-22', 'YYYY-MM-DD'));
+INSERT INTO Delivery VALUES ('3588', '74837', '527-72-3246', TO_DATE('2021-3-23', 'YYYY-MM-DD'));
+INSERT INTO Delivery VALUES ('1922', '74838', '427-17-2319', TO_DATE('2022-11-13', 'YYYY-MM-DD'));
+
+
+
+
+INSERT INTO Orders VALUES ('AB-123-DEF-425-1Z3', '427-17-2319', '1922', TO_DATE('2022-11-6', 'YYYY-MM-DD'));
+INSERT INTO Orders VALUES ('BS-345-DSE-860-1F2', '527-72-3246', '0877', TO_DATE('2016-12-12', 'YYYY-MM-DD'));
+INSERT INTO Orders VALUES ('GH-542-NAD-713-9F9', '486-29-1786', '1389', TO_DATE('2022-3-15', 'YYYY-MM-DD'));
+INSERT INTO Orders VALUES ('ZS-645-CAT-415-1B2', '527-72-3246', '3588', TO_DATE('2021-3-12', 'YYYY-MM-DD'));
+INSERT INTO Orders VALUES ('AX-532-FED-452-2Z7', '648-92-1872', '0736', TO_DATE('2020-1-22', 'YYYY-MM-DD'));
+
+
+
+
+INSERT INTO DeliveryDriver VALUES ('96740', 'L145D', 'PA');
+INSERT INTO DeliveryDriver VALUES ('58484', 'O345I', 'MA');
+INSERT INTO DeliveryDriver VALUES ('38956', 'U834R', 'NJ');
+INSERT INTO DeliveryDriver VALUES ('74837', 'L145D', 'CA');
+INSERT INTO DeliveryDriver VALUES ('74838', 'L145D', 'PA');
+
+
+
+
+INSERT INTO Manager VALUES ('75838', '18');
+INSERT INTO Manager VALUES ('86943', '5');
+INSERT INTO Manager VALUES ('26473', '7');
+INSERT INTO Manager VALUES ('24478', '12');
+INSERT INTO Manager VALUES ('86947', '32');
+
+
+
+
+INSERT INTO OrderReturn VALUES ('57384', '213-46-8915', TO_DATE('2022-10-31', 'YYYY-MM-DD'));
+INSERT INTO OrderReturn VALUES ('66254', '527-72-3246', TO_DATE('2022-5-5', 'YYYY-MM-DD'));
+INSERT INTO OrderReturn VALUES ('34952', '648-92-1872', TO_DATE('2022-7-17', 'YYYY-MM-DD'));
+INSERT INTO OrderReturn VALUES ('44978', '486-29-1786', TO_DATE('2022-11-22', 'YYYY-MM-DD'));
+INSERT INTO OrderReturn VALUES ('19564', '427-17-2319', TO_DATE('2022-9-5', 'YYYY-MM-DD'));
+
+
+
+
+INSERT INTO Warehouse VALUES ('W20221', '5720 McAuley St.');
+INSERT INTO Warehouse VALUES ('W20222', '4 Upland Hts.');
+INSERT INTO Warehouse VALUES ('W20223', '3410 Blonde St.');
+INSERT INTO Warehouse VALUES ('W20224', '3 Silver Ct.');
+INSERT INTO Warehouse VALUES ('W20225', '22 Cleveland Av. #1');
+
+
+
+
+INSERT INTO Vendor VALUES ('V20221', 'Honeywell', '6223 Bateman St.#410, Philadelphia, PA', '415 658-9932');
+INSERT INTO Vendor VALUES ('V20222', 'Philips', '309 63rd St. #411, Oakland, CA', '425 658-9932');
+INSERT INTO Vendor VALUES ('V20223', 'Revlon', '589 Darwin Ln. #412, Berkeley, CA', '435 658-9932');
+INSERT INTO Vendor VALUES ('V20224', 'Sony', '67 Seventh Av.#413, San Francisco, CA', '445 658-9932');
+INSERT INTO Vendor VALUES ('V20225', 'LG', '3 Balding Pl.#414, Seattle, WA', '455 658-9932');
+
+
+
+INSERT INTO Product VALUES ('123547', 'BS-345-DSE-860-1F2', 'Book', 'Stationery', '7', '10');
+INSERT INTO Product VALUES ('354723', 'ZS-645-CAT-415-1B2', 'Earphones', 'Electronics', '450', '750');
+INSERT INTO Product VALUES ('542337', 'AX-532-FED-452-2Z7', 'Pen', 'Stationery', '3', '5');
+INSERT INTO Product VALUES ('723232', 'GH-542-NAD-713-9F9', 'Mobile', 'Electronics', '650', '1000');
+INSERT INTO Product VALUES ('324234', 'AB-123-DEF-425-1Z3', 'iPad', 'Electronics', '750', '1050');
+
+
+
+
+INSERT INTO Supply VALUES ('W20221', 'V20221', '123547');
+INSERT INTO Supply VALUES ('W20222', 'V20222', '354723');
+INSERT INTO Supply VALUES ('W20223', 'V20223', '542337');
+INSERT INTO Supply VALUES ('W20224', 'V20224', '723232');
+INSERT INTO Supply VALUES ('W20225', 'V20225', '324234');
+
+
+
+INSERT INTO OrderLineItem VALUES ('233242', 'BS-345-DSE-860-1F2', '123547', 'Thriller Novel from a famous author');
+INSERT INTO OrderLineItem VALUES ('423234', 'ZS-645-CAT-415-1B2', '354723', 'Apple Airpods Pro');
+INSERT INTO OrderLineItem VALUES ('923423', 'AX-532-FED-452-2Z7', '542337', 'Parker ballpoint Pen');
+INSERT INTO OrderLineItem VALUES ('559022', 'GH-542-NAD-713-9F9', '723232', 'Iphone 14 Pro');
+INSERT INTO OrderLineItem VALUES ('454311', 'BS-345-DSE-860-1F2', '324234', 'Ipad Air 2');
+
+
+
+
+INSERT INTO ReturnLineItem VALUES ('55978', '66254', '454311', 'product damaged');
+INSERT INTO ReturnLineItem VALUES ('40013', '57384', '559022', 'not needed anymore');
+INSERT INTO ReturnLineItem VALUES ('90675', '34952', '923423', 'item not working properly');
+INSERT INTO ReturnLineItem VALUES ('11902', '44978', '423234', 'better price available');
+INSERT INTO ReturnLineItem VALUES ('21311', '19564', '233242', 'bought by mistake');
